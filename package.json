@@ -7,8 +7,8 @@
   "scripts": {
     "install": "lerna clean --yes && lerna bootstrap",
     "build": "lerna run build",
-    "version": "lerna version --conventional-commits --no-commit-hooks --no-changelog --yes",
-    "publish": "lerna publish from-package --yes",
+    "version": "lerna version --conventional-commits --no-commit-hooks --no-push --no-changelog --yes",
+    "publish": "lerna publish from-package --yes --force-push",
     "license": "node scripts/copy-license",
     "deploy": "npm i && npm run build && npm run license && npm run version && npm run publish"
   },
