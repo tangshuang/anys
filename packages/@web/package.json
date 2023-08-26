@@ -1,0 +1,39 @@
+{
+  "name": "anys-web",
+  "version": "1.0.0",
+  "description": "",
+  "main": "cjs/index.js",
+  "module": "src/index.js",
+  "type": "module",
+  "exports": {
+    "import": "./src/index.js",
+    "require": "./cjs/index.js"
+  },
+  "scripts": {
+    "build:cjs": "rimraf cjs && babel src --out-dir cjs --root-mode upward",
+    "build:dist": "rimraf dist && webpack --config ../../webpack.config.js",
+    "build": "npm run build:cjs && npm run build:dist"
+  },
+  "keywords": [],
+  "author": "tangshuang",
+  "license": "ISC",
+  "dependencies": {
+    "anys": "*",
+    "anys-shared": "*",
+    "anys-web-plugin-monitor-mouse-event": "*",
+    "anys-web-plugin-monitor-input-event": "*",
+    "anys-web-plugin-monitor-touch-event": "*",
+    "anys-web-plugin-monitor-url": "*",
+    "anys-web-plugin-identify": "*",
+    "anys-web-plugin-monitor-ajax": "*",
+    "anys-web-plugin-monitor-window-activity": "*",
+    "anys-web-plugin-store-offline": "*",
+    "anys-web-plugin-send-by-ajax": "*",
+    "anys-web-plugin-monitor-dom-mutation": "*",
+    "anys-web-plugin-monitor-window-size": "*",
+    "anys-web-plugin-monitor-scroll-event": "*"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  }
+}
