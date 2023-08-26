@@ -1,6 +1,6 @@
 {
   "name": "anys-web-plugin-monitor-mouse-event",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "description": "",
   "main": "cjs/index.js",
   "module": "src/index.js",
