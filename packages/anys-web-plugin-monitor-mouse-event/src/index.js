@@ -14,7 +14,7 @@ export class AnysMonitorMouseEventPlugin extends AnysPlugin {
         };
     }
 
-    addEventListener(event) {
+    addEventListener(event, throttle) {
         if (!this.anys.options.mouse) {
             return;
         }
@@ -38,17 +38,13 @@ export class AnysMonitorMouseEventPlugin extends AnysPlugin {
                 },
             };
             return log;
-        });
+        }, throttle);
         document.addEventListener(event, listener, true);
         return () => document.removeEventListener(event, listener);
     }
 
     registerClick() {
         return this.addEventListener('click');
-    }
-
-    registerMousemove() {
-        return this.addEventListener('mousemove');
     }
 
     registerMouseup() {
@@ -61,6 +57,10 @@ export class AnysMonitorMouseEventPlugin extends AnysPlugin {
 
     registerContextmenu() {
         return this.addEventListener('contextmenu');
+    }
+
+    registerMousemove() {
+        return this.addEventListener('mousemove', 100);
     }
 
     registerWheel() {
@@ -89,21 +89,29 @@ export class AnysMonitorMouseEventPlugin extends AnysPlugin {
                 },
             };
             return log;
-        });
+        }, 100);
         document.addEventListener(type, listener);
         return () => document.removeEventListener(type, listener);
     }
 
-    createThrottleListener(createLog) {
+    createThrottleListener(createLog, throttle) {
         let ticking = 0;
+        let time = 0;
         const listener = (e) => {
             if (ticking) {
                 return;
             }
+
+            const now = Date.now();
+            if (throttle && time + throttle > now) {
+                return;
+            }
+
             const log = createLog(e);
             requestAnimationFrame(() => {
                 this.anys.write(log);
                 ticking = 0;
+                time = Date.now();
             });
 
             ticking = 1;
