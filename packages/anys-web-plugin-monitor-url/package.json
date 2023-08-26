@@ -1,6 +1,6 @@
 {
   "name": "anys-web-plugin-monitor-url",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "cjs/index.js",
   "module": "src/index.js",
