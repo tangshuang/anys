@@ -2,7 +2,8 @@
     "compilerOptions": {
         "target": "esnext",
         "module": "nodenext",
-        "checkJs": true
+        "checkJs": true,
+        "resolveJsonModule": true
     },
     "exclude": [
         "packages/*/cjs/*",
