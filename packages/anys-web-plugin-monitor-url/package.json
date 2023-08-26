@@ -1,0 +1,26 @@
+{
+  "name": "anys-web-plugin-monitor-url",
+  "version": "1.3.0",
+  "description": "",
+  "main": "cjs/index.js",
+  "module": "src/index.js",
+  "type": "module",
+  "exports": {
+    "import": "./src/index.js",
+    "require": "./cjs/index.js"
+  },
+  "scripts": {
+    "build:cjs": "rimraf cjs && babel src --out-dir cjs --root-mode upward",
+    "build:dist": "rimraf dist && webpack --config ../../webpack.config.js",
+    "build": "npm run build:cjs && npm run build:dist"
+  },
+  "keywords": [],
+  "author": "tangshuang",
+  "license": "ISC",
+  "dependencies": {
+    "anys-shared": "*"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  }
+}

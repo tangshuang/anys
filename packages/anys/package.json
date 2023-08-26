@@ -1,0 +1,25 @@
+{
+  "name": "anys",
+  "version": "0.0.1",
+  "description": "The most agile javascript monitor project.",
+  "main": "cjs/index.js",
+  "module": "src/index.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    "import": "./src/index.js",
+    "require": "./cjs/index.js"
+  },
+  "scripts": {
+    "build:cjs": "rimraf cjs && babel src --out-dir cjs --root-mode upward",
+    "build:dist": "rimraf dist && webpack --config ../../webpack.config.js",
+    "build": "npm run build:cjs && npm run build:dist"
+  },
+  "author": "tangshuang",
+  "license": "MIT",
+  "dependencies": {
+    "ts-fns": "^11.1.1"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  }
+}

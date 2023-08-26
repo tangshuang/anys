@@ -1,0 +1,36 @@
+{
+  "name": "anys",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "install": "lerna clean --yes && lerna bootstrap",
+    "build": "lerna run build",
+    "version": "lerna version --conventional-commits --no-commit-hooks --no-changelog --yes",
+    "publish": "lerna publish from-package --yes",
+    "deploy": "npm i && npm run build && npm run version && npm run publish"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.21.5",
+    "@babel/core": "^7.21.8",
+    "@babel/plugin-transform-arrow-functions": "^7.22.5",
+    "@babel/plugin-transform-class-properties": "^7.22.0",
+    "@babel/plugin-transform-classes": "^7.21.0",
+    "@babel/plugin-transform-modules-commonjs": "^7.21.5",
+    "@babel/plugin-transform-object-rest-spread": "^7.22.5",
+    "@babel/plugin-transform-runtime": "^7.21.4",
+    "@babel/plugin-transform-spread": "^7.22.5",
+    "@babel/plugin-transform-template-literals": "^7.22.5",
+    "babel-loader": "^9.1.2",
+    "babel-minify": "^0.5.2",
+    "eslint": "^8.41.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "lerna": "^6.6.2",
+    "terser-webpack-plugin": "^5.3.9",
+    "ts-fns": "^11.1.1",
+    "webpack": "^5.84.1",
+    "webpack-cli": "^5.1.1",
+    "webpack-merge": "^5.9.0"
+  }
+}

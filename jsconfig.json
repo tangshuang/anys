@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "nodenext",
+        "checkJs": true
+    },
+    "exclude": [
+        "packages/*/cjs/*",
+        "packages/*/dist/*",
+        "packages/*/node_modules/**/*",
+        "node_modules/**/*"
+    ]
+}
