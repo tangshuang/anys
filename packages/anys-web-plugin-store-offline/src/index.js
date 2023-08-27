@@ -51,6 +51,7 @@ export class AnysStoreOfflinePlugin {
                     .push(() => this.db.some(100, offset))
                     .then((logs) => {
                         if (!logs.length) {
+                            // @ts-ignore
                             clearInterval(timer);
                             return;
                         }
@@ -104,6 +105,10 @@ export class AnysStoreOfflinePlugin {
             return;
         }
         return this.select(message);
+    }
+
+    clear(logs) {
+        return this.queue.push(() => this.db.remove(logs)).catch(() => {});
     }
 
     /**

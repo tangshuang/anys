@@ -27,7 +27,7 @@ import { AnysMonitorErrorPlugin } from 'anys-web-plugin-monitor-error';
 </script>
 ```
 
-## Config
+## Options
 
 - error: boolean, wheather monitor JSError, default `true`
 - unhandledrejection: boolean, wheather monitor Promise rejection, default `true`

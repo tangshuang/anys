@@ -28,7 +28,7 @@ import { AnysMonitorUrlPlugin } from 'anys-web-plugin-monitor-url';
 </script>
 ```
 
-## Config
+## Options
 
 - url: boolean
 

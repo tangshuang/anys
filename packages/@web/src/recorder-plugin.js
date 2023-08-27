@@ -26,9 +26,9 @@ export class AnysRecorderPlugin extends AnysPlugin {
         AnysMonitorScrollEventPlugin,
     ];
 
-    constructor(anys, [offlineLogger, urlMonitor, windowSizeMonitor, DOMMutationMonitor]) {
+    constructor(anys, [offlineStore, urlMonitor, windowSizeMonitor, DOMMutationMonitor]) {
         super(anys);
-        this.offlineLogger = offlineLogger;
+        this.offlineStore = offlineStore;
         this.urlMonitor = urlMonitor;
         this.windowSizeMonitor = windowSizeMonitor;
         this.DOMMutationMonitor = DOMMutationMonitor;
@@ -73,7 +73,6 @@ export class AnysRecorderPlugin extends AnysPlugin {
 
         const timer = setInterval(() => {
             this.anys.report();
-            this.cache = {};
         }, this.anys.options.reportInterval);
 
         let isUnloaded = 0;
@@ -86,7 +85,7 @@ export class AnysRecorderPlugin extends AnysPlugin {
             const ids = Object.keys(this.cache);
             const logs = Object.values(this.cache);
             if (ids.length) {
-                this.offlineLogger.remove(ids); // async may not executed
+                this.offlineStore.remove(ids); // async may not executed
                 navigator.sendBeacon(this.anys.options.reportUrl, JSON.stringify(logs));
                 this.cache = {};
             }
@@ -115,7 +114,7 @@ export class AnysRecorderPlugin extends AnysPlugin {
      * @returns
      */
     read(message) {
-        return this.offlineLogger.read(message);
+        return this.offlineStore.read(message);
     }
 
     send(logs) {
@@ -130,7 +129,7 @@ export class AnysRecorderPlugin extends AnysPlugin {
             }
         });
 
-        groups.forEach((data) => {
+        const defers = groups.map((data) => {
             const items = [];
             const ids = [];
 
@@ -146,13 +145,18 @@ export class AnysRecorderPlugin extends AnysPlugin {
 
             const { reportUrl, reportParams } = this.anys.options;
             const url = reportParams ? replaceUrlSearch(reportUrl, reportParams) : reportUrl;
-            ajaxPost(url, items).then(() => {
-                this.offlineLogger.remove(ids);
+            return ajaxPost(url, items).then(() => {
                 ids.forEach((id) => {
                     delete this.cache[id];
                 });
             });
         });
+
+        return Promise.all(defers);
+    }
+
+    clear() {
+        this.cache = {};
     }
 
     auth(info) {

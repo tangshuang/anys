@@ -19,6 +19,19 @@ In the architecture, we have two space, and when we invoke the core SDK instance
 
 ![](assets/lifecycle.png)
 
+Plugin hooks and their order:
+
+- optins(): { key: value }
+- defines(): { key(): value }
+- filters(): \[filter()]
+- init(): void
+- start(): void
+- write(log): void
+- read(message): logs
+- send(logs, allPluginReadResults): void
+- clear(logs): void
+- stop()
+
 This architecture make the monitor more agile to compact your real demands.
 
 ## Community

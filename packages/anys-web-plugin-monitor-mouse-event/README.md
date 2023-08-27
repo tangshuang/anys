@@ -27,9 +27,9 @@ import { AnysMonitorMouseEventPlugin } from 'anys-web-plugin-monitor-mouse-event
 </script>
 ```
 
-## Config
+## Options
 
-- mouse: !isSupportTouch, total switch, when `false` all config items will not work
+- mouse: !isSupportTouch, total switch, when `false` all options items will not work
 - click: true,
 - mousemove: false,
 - mousedown: false,

@@ -27,7 +27,7 @@ import { AnysMonitorAjaxPlugin } from 'anys-web-plugin-monitor-ajax';
 </script>
 ```
 
-## Config
+## Options
 
 - xhr: boolean, wheather to monitor XMLHttpRequest
 - fetch: boolean, wheather to monitor fetch function

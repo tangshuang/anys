@@ -17,17 +17,17 @@ npm i anys
 ```js
 import { Anys } from 'anys';
 
-const anys = new Anys(config);
+const anys = new Anys(options);
 ```
 
 ```html
 <script>
     const { Anys } = window.anys;
-    const anys = new Anys(config);
+    const anys = new Anys(options);
 </script>
 ```
 
-## Config
+## Options
 
 - autoStart: boolean, wheather start anys process after initialize, default `true`
 - plugins: array|object
@@ -103,4 +103,4 @@ Ask anys to report logs to your server side.
 
 Bind listener for event.
 
-Events: start, write, report, read, send, complete, stop, refreshTraceId, refreshRequestId.
+Events: start, write, report, read, send, clear, stop, refreshTraceId, refreshRequestId.

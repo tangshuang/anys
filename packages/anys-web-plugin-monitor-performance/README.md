@@ -21,7 +21,7 @@ npm i anys-web-plugin-monitor-performance
 </script>
 ```
 
-## Config
+## Options
 
 - performance: boolean (true)
 - fps: boolean | number (true)

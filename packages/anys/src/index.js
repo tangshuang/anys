@@ -9,6 +9,7 @@ import {
 export class Anys {
     constructor(options) {
         this.$events = [];
+        this.$queue = [];
 
         const Constructor = getConstructorOf(this);
 
@@ -86,11 +87,11 @@ export class Anys {
             if (plugin.options) {
                 Object.assign(pluginOptions, plugin.options());
             }
-            if (plugin.filters) {
-                pluginFilters.push(...plugin.filters());
-            }
             if (plugin.defines) {
                 Object.assign(pluginDefines, plugin.defines());
+            }
+            if (plugin.filters) {
+                pluginFilters.push(...plugin.filters());
             }
             plugins.push(plugin);
 
@@ -244,71 +245,100 @@ export class Anys {
     }
 
     report(message) {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                this.emit('report', message);
-
-                const defers = [];
-
-                const readers = [];
-                const senders = [];
-                const completers = [];
-
-                const toAsync = (...fns) => fns.reduce((deferer, fn) => isFunction(fn) ? deferer.then(fn) : deferer, Promise.resolve());
-                const runAsyncAll = (fns, param) => Promise.all(fns.map(fn => toAsync(() => fn(param))));
-
-                for (let i = 0, len = this.$plugins.length; i < len; i += 1) {
-                    const plugin = this.$plugins[i];
-                    if (isFunction(plugin.read) && isFunction(plugin.send)) {
-                        const defer = toAsync(
-                            () => plugin.read(message),
-                            (data) => data && Promise.resolve(plugin.send(data)).then(() => data),
-                            (data) => data && isFunction(plugin.complete) && plugin.complete(data),
-                        );
-                        defers.push(defer);
-                    }
-                    else {
-                        if (isFunction(plugin.read)) {
-                            readers.push(plugin.read.bind(plugin));
-                        }
-                        else if (isFunction(plugin.send)) {
-                            senders.push(plugin.send.bind(plugin));
-                        }
-                        if (isFunction(plugin.complete)) {
-                            completers.push(plugin.complete.bind(plugin));
-                        }
-                    }
-                }
-
-                const readSend = toAsync(
-                    () => runAsyncAll(readers, message),
-                    (groups) => {
-                        const data = [];
-                        groups.forEach((logs) => isArray(logs) && logs.length && data.push(...logs));
-                        this.emit('read', data);
-                        return data;
-                    },
-                    (data) => {
-                        if (!data.length) {
-                            return;
-                        }
-                        this.emit('send', data);
-                        return runAsyncAll(senders, data).then(() => data);
-                    },
-                    (data) => {
-                        if (!data) {
-                            return;
-                        }
-                        this.emit('complete', data);
-                        return runAsyncAll(completers, data);
-                    },
-                );
-
-                const selfReport = Promise.all(defers);
-
-                Promise.all([readSend, selfReport]).then(resolve, reject);
-            }, 0);
+        let resolve, reject;
+        const defer = new Promise((ro, re) => {
+            resolve = ro;
+            reject = re;
         });
+        const signal = { message, resolve, reject };
+        this.$queue.push(signal);
+
+        this._reporting = false;
+        const run = () => setTimeout(() => {
+            if (this._reporting) {
+                return;
+            }
+
+            this._reporting = true;
+
+            const signal = this.$queue.shift();
+            if (!signal) {
+                return;
+            }
+
+            const { message, resolve, reject } = signal;
+            this.emit('report', message);
+
+            const operators = [];
+
+            for (let i = 0, len = this.$plugins.length; i < len; i += 1) {
+                const plugin = this.$plugins[i];
+                const operator = {};
+                let flag = 0;
+                if (isFunction(plugin.read)) {
+                    operator.read = plugin.read.bind(plugin);
+                    flag = 1;
+                }
+                if (isFunction(plugin.send)) {
+                    operator.send = plugin.send.bind(plugin);
+                    flag = 1;
+                }
+                if (isFunction(plugin.clear)) {
+                    operator.clear = plugin.clear.bind(plugin);
+                    flag = 1;
+                }
+                if (flag) {
+                    operators.push(operator);
+                }
+            }
+
+            const runAsync = (fn, ...args) => Promise.resolve().then(() => isFunction(fn) ? fn(...args) : null);
+            const runAsyncPipe = (...fns) => fns.reduce((deferer, fn) => isFunction(fn) ? deferer.then(fn) : deferer, Promise.resolve());
+
+            runAsyncPipe(
+                () => Promise.all(operators.map((operator) => {
+                    return runAsync(operator.read, message).then((data) => {
+                        operator.data = data;
+                        return data;
+                    });
+                })),
+                (groups) => {
+                    const data = [];
+                    groups.forEach((logs) => {
+                        if (isArray(logs) && logs.length) {
+                            data.push(...logs);
+                        }
+                    });
+                    this.emit('read', data);
+                    return data;
+                },
+                (data) => {
+                    if (!data.length) {
+                        return;
+                    }
+                    this.emit('send', data);
+                    return Promise.all(operators.map((operator) => {
+                        return runAsync(operator.send, operator.data, data);
+                    })).then(() => data);
+                },
+                (data) => {
+                    if (!data) {
+                        return;
+                    }
+                    this.emit('clear', data);
+                    return Promise.all(operators.map((operator) => {
+                        return runAsync(operator.clear, operator.data);
+                    }));
+                },
+            ).then(resolve, reject).finally(() => {
+                this._reporting = false;
+                run();
+            });
+        }, 0);
+
+        run();
+
+        return defer;
     }
 
     stop() {
@@ -321,10 +351,5 @@ export class Anys {
          * whether start plugins automaticly
          */
         autoStart: true,
-        /**
-         * auto send logs to server side,
-         * if false, you should must invoke .send to report manually
-         */
-        autoReport: true,
     };
 }

@@ -5,10 +5,14 @@ export class AnysStoreMemoryPlugin {
     }
 
     write(log) {
-        this.logs.push(log)
+        this.logs.push(log);
     }
 
     read() {
         return this.logs;
+    }
+
+    clear(items) {
+        this.logs = this.logs.filter(item => !items.includes(item));
     }
 }
