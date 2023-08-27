@@ -4,11 +4,6 @@ type AnysOptions = {
      */
     autoStart?: boolean,
     /**
-     * auto send logs to server side,
-     * if false, you should must invoke .send to report manually
-     */
-    autoReport?: boolean,
-    /**
      * plugins
      */
     plugins?: Array<Function> | { [key: string] : Function },

@@ -30,7 +30,6 @@ const anys = new Anys(config);
 ## Config
 
 - autoStart: boolean, wheather start anys process after initialize, default `true`
-- autoReport: boolean, wheather report logs after write, default `true`
 - plugins: array|object
 - defines: object, getter functions to define basic properties on all logs
 - filters: array, filter functions to keep or remove a log before `write` lifecycle

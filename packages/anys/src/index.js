@@ -240,10 +240,6 @@ export class Anys {
 
             this.invoke('write', data);
             this.emit('write', data);
-
-            if (this.options.autoReport) {
-                this.report();
-            }
         }, 0);
     }
 

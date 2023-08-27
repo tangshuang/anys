@@ -45,9 +45,10 @@ export class AnysMonitorElementBrowPlugin extends AnysPlugin {
                     return;
                 }
                 const log = {
-                    type: 'brow',
+                    type: 'element.brow',
                     time: Date.now(),
                     name,
+                    data,
                     detail: {
                         e: getPath(target),
                         left,
@@ -57,7 +58,6 @@ export class AnysMonitorElementBrowPlugin extends AnysPlugin {
                         x,
                         y,
                     },
-                    data,
                 };
                 this.anys.write(log);
                 observer.unobserve(target);
