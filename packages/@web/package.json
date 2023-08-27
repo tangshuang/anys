@@ -16,7 +16,7 @@
   },
   "keywords": [],
   "author": "tangshuang",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "dependencies": {
     "anys": "^1.2.0",
     "anys-shared": "^1.2.0",

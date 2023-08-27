@@ -10,7 +10,7 @@
     "version": "lerna version --conventional-commits --no-commit-hooks --no-push --no-changelog --yes",
     "publish": "lerna publish from-package --yes",
     "license": "node scripts/copy-license",
-    "deploy": "npm run build && npm run license && npm run version && npm run publish"
+    "dist": "npm run build && npm run license && npm run version && npm run publish"
   },
   "devDependencies": {
     "@babel/cli": "^7.21.5",
