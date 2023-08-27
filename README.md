@@ -20,3 +20,8 @@ In the architecture, we have two space, and when we invoke the core SDK instance
 ![](assets/lifecycle.png)
 
 This architecture make the monitor more agile to compact your real demands.
+
+## Community
+
+QQ群： 894883922<br />
+<img style="width:200px;" src="assets/qq-group.png" />
