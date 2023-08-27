@@ -6,13 +6,19 @@ export class AnysSendByBeaconPlugin extends AnysPlugin {
             autoReport: true,
             reportUrl: new Error('[Anys]: options.reportUrl is required!'),
             reportParams: null,
+            reportInterval: 0,
         };
     }
 
     registerAutoReport() {
-        const listener = () => {
-            this.anys.report();
+        const { reportInterval } = this.anys.options;
+        if (reportInterval) {
+            const timer = setInterval(() => this.anys.report(), reportInterval);
+            // @ts-ignore
+            return () => clearInterval(timer);
         }
+
+        const listener = () => this.anys.report();
         this.anys.on('write', listener);
         return () => this.anys.off('write', listener);
     }
