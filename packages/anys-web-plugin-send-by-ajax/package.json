@@ -1,6 +1,6 @@
 {
   "name": "anys-web-plugin-send-by-ajax",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "",
   "main": "cjs/index.js",
   "module": "src/index.js",
