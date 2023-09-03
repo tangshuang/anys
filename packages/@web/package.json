@@ -1,6 +1,6 @@
 {
   "name": "anys-web",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "",
   "main": "cjs/index.js",
   "module": "src/index.js",
@@ -30,7 +30,7 @@
     "anys-web-plugin-monitor-url": "^1.4.0",
     "anys-web-plugin-monitor-window-activity": "^1.4.0",
     "anys-web-plugin-monitor-window-size": "^1.4.0",
-    "anys-web-plugin-send-by-ajax": "^1.4.0",
+    "anys-web-plugin-send-by-ajax": "^1.4.1",
     "anys-web-plugin-store-offline": "^1.4.0"
   },
   "publishConfig": {
