@@ -27,7 +27,7 @@ export class AnysSendByBeaconPlugin extends AnysPlugin {
         const { reportUrl, reportParams } = this.anys.options;
         const url = reportParams ? replaceUrlSearch(reportUrl, reportParams) : reportUrl;
         try {
-            navigator.sendBeacon(url, JSON.stringify(logs));
+            navigator.sendBeacon(url, JSON.stringify({ data: logs }));
         }
         catch (e) {
             console.error(e);

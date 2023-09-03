@@ -27,7 +27,7 @@ export class AnysSendByAjaxPlugin extends AnysPlugin {
         const { reportUrl, reportParams } = this.anys.options;
         const url = reportParams ? replaceUrlSearch(reportUrl, reportParams) : reportUrl;
         try {
-            await ajaxPost(url, logs);
+            await ajaxPost(url, { data: logs });
         }
         catch (e) {
             console.error(e);

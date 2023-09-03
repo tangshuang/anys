@@ -145,7 +145,7 @@ export class AnysRecorderPlugin extends AnysPlugin {
 
             const { reportUrl, reportParams } = this.anys.options;
             const url = reportParams ? replaceUrlSearch(reportUrl, reportParams) : reportUrl;
-            return ajaxPost(url, items).then(() => {
+            return ajaxPost(url, { data: items }).then(() => {
                 ids.forEach((id) => {
                     delete this.cache[id];
                 });
