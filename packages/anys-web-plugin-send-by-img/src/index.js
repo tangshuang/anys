@@ -1,4 +1,5 @@
-import { toUrlParams, AnysPlugin } from 'anys-shared';
+import { AnysPlugin } from 'anys-shared';
+import { toUrlParams } from './to-url-params.js';
 
 export class AnysSendByImgPlugin extends AnysPlugin {
     options() {

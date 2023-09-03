@@ -33,8 +33,4 @@ export class AnysSendByAjaxPlugin extends AnysPlugin {
             console.error(e);
         }
     }
-
-    auth(info) {
-        this.anys.options.reportParams = Object.assign(this.anys.options.reportParams || {}, info);
-    }
 }

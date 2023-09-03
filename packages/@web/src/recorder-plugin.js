@@ -158,8 +158,4 @@ export class AnysRecorderPlugin extends AnysPlugin {
     clear() {
         this.cache = {};
     }
-
-    auth(info) {
-        this.anys.options.reportParams = Object.assign(this.anys.options.reportParams || {}, info);
-    }
 }
