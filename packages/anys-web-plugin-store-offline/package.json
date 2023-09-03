@@ -1,6 +1,6 @@
 {
   "name": "anys-web-plugin-store-offline",
-  "version": "1.2.0",
+  "version": "1.4.0",
   "description": "",
   "main": "cjs/index.js",
   "module": "src/index.js",
@@ -18,7 +18,7 @@
   "author": "tangshuang",
   "license": "Apache-2.0",
   "dependencies": {
-    "anys-shared": "^1.2.0",
+    "anys-shared": "^1.4.0",
     "indb": "^4.0.1"
   },
   "publishConfig": {
