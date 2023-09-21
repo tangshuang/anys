@@ -77,7 +77,7 @@ export function AsyncPlugin(options) {
         // @ts-ignore
         const Plugin = window.anys && window.anys[pluginName];
         if (!Plugin) {
-            onError && onError(`[Anys]: AsyncPlugin "${pluginUrl}" not fond at window.anys.${pluginName}`);
+            onError && onError(`AsyncPlugin "${pluginUrl}" not fond at window.anys.${pluginName}`);
         } else {
             resolve(Plugin);
         }
@@ -142,7 +142,7 @@ export function AsyncPlugin(options) {
                 const { $plugins, plugins } = this.anys;
                 pluginList.forEach((Plugin) => {
                     // const warnExist = (name) => {
-                    //     const msg = `[Anys]: async plugin named '${name}' has been registered`;
+                    //     const msg = `async plugin named '${name}' has been registered`;
                     //     if (!(plugins[name] instanceof Plugin)) {
                     //         console.error(msg, Plugin, plugins);
                     //     }

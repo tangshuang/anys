@@ -7,7 +7,7 @@ export class AnysIdentifyPlugin {
 
     options() {
         return {
-            namespace: new Error('[Anys]: options.namespace is required!'),
+            namespace: new Error('options.namespace is required!'),
         };
     }
 

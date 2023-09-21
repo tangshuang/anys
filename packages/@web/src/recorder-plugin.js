@@ -46,7 +46,7 @@ export class AnysRecorderPlugin extends AnysPlugin {
             mousemove: true,
             mouseup: true,
             autoReport: false,
-            reportUrl: new Error('[Anys]: options.reportUrl is required!'),
+            reportUrl: new Error('options.reportUrl is required!'),
             reportInterval: 10000,
             reportParams: null,
         };

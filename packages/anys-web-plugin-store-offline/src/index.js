@@ -8,7 +8,7 @@ export class AnysStoreOfflinePlugin {
 
     options() {
         return {
-            namespace: new Error('[Anys]: options.namespace is required!'),
+            namespace: new Error('options.namespace is required!'),
             /**
              * offline log will close autoReport as default,
              * developers should must invoke anys.send to send logs to server side during

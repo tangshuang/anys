@@ -39,7 +39,7 @@ export class Anys {
         const pluginDefines = {};
 
         const isGivenPluginsMapping = givenPluings && !isArray(givenPluings) && typeof givenPluings === 'object';
-        const givenPluingList = isGivenPluginsMapping ? Object.values(givenPluings) : isArray(givenPluings) ? givenPluings : [];
+        const givenPluingList = isGivenPluginsMapping ? objectValues(givenPluings) : isArray(givenPluings) ? givenPluings : [];
         const givenPluginMapping = isGivenPluginsMapping ? Object.keys(givenPluings).map((key) => ({ key, value: givenPluings[key] })) : [];
 
         // create a plugin list which is sorted be dependence direction
@@ -60,7 +60,7 @@ export class Anys {
         const pluginSet = {};
         pluginList.forEach((Plugin) => {
             const warnExist = (name) => {
-                const msg = `[Anys]: plugin named '${name}' has been registered`;
+                const msg = `plugin named '${name}' has been registered`;
                 if (!(pluginSet[name] instanceof Plugin)) {
                     console.error(msg, Plugin, pluginSet);
                 }
@@ -85,10 +85,10 @@ export class Anys {
                 .map((P) => plugins.find((item) => item instanceof P));
             const plugin = new Plugin(this, deps);
             if (plugin.options) {
-                Object.assign(pluginOptions, plugin.options());
+                objectAssign(pluginOptions, plugin.options());
             }
             if (plugin.defines) {
-                Object.assign(pluginDefines, plugin.defines());
+                objectAssign(pluginDefines, plugin.defines());
             }
             if (plugin.filters) {
                 pluginFilters.push(...plugin.filters());
@@ -112,7 +112,7 @@ export class Anys {
         /**
          * check required options which is not passed
          */
-        const optionValues = Object.values(this.options);
+        const optionValues = objectValues(this.options);
         const requiredOption = optionValues.find((item) => item && item instanceof Error);
         if (requiredOption) {
             throw requiredOption;
@@ -166,6 +166,21 @@ export class Anys {
 
         if (this.options.autoStart) {
             this.start();
+        }
+
+        function objectValues(obj) {
+            const keys = Object.keys(obj);
+            const values = keys.map(key => obj[key]);
+            return values;
+        }
+
+        function objectAssign(obj1, obj2) {
+            const keys = Object.keys(obj2);
+            keys.forEach((key) => {
+                const value = obj2[key];
+                obj1[key] = value;
+            });
+            return obj1;
         }
     }
 

@@ -60,11 +60,19 @@ export class Anys {
         [key: string]: any;
     };
 
+    clientId: string;
+
+    traceId: string;
+
+    requestId: string;
+
     init(options: AnysOptions): void;
 
     define(key: string, get: () => number | string): void;
 
     on(event: string, callback: (...args: any[]) => void): void;
+
+    off(event: string, callback: (...args: any[]) => void): void;
 
     emit(event: string, ...args: any[]): void;
 

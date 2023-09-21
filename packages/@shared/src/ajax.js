@@ -11,7 +11,7 @@ export function ajaxPost(url, data) {
                     resolve(http.responseText);
                 }
                 else {
-                    reject(new Error(`[Anys]: ajax post fail with status ${http.status}`));
+                    reject(new Error(`ajax post fail with status ${http.status}`));
                 }
             }
         };

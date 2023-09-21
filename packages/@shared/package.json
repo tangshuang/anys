@@ -2,16 +2,9 @@
   "name": "anys-shared",
   "version": "1.4.0",
   "description": "",
-  "main": "cjs/index.js",
-  "module": "src/index.js",
-  "exports": {
-    "import": "./src/index.js",
-    "require": "./cjs/index.js"
-  },
-  "scripts": {
-    "build": "rimraf cjs && babel src --out-dir cjs --root-mode upward"
-  },
-  "author": "",
+  "main": "src/index.js",
+  "type": "module",
+  "author": "tangshuang",
   "license": "Apache-2.0",
   "dependencies": {
     "anys": "^1.2.0"

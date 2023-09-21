@@ -4,7 +4,7 @@ export class AnysSendByAjaxPlugin extends AnysPlugin {
     options() {
         return {
             autoReport: true,
-            reportUrl: new Error('[Anys]: options.reportUrl is required!'),
+            reportUrl: new Error('options.reportUrl is required!'),
             reportParams: null,
             reportInterval: 0,
         };

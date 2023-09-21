@@ -5,7 +5,7 @@ export class AnysSendByImgPlugin extends AnysPlugin {
     options() {
         return {
             autoReport: true,
-            reportUrl: new Error('[Anys]: options.reportUrl is required!'),
+            reportUrl: new Error('options.reportUrl is required!'),
         };
     }
 

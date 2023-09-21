@@ -6,3 +6,4 @@ export * from './ajax.js';
 export * from './url.js';
 export * from './try.js';
 export * from './camel-case.js';
+export * from './polyfil.js';
