@@ -3,4 +3,3 @@ dist/
 cjs/
 lerna-debug.log
 packages/*/LICENSE
-packages/*/package-lock.json
