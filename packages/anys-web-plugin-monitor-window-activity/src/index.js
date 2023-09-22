@@ -15,7 +15,7 @@ export class AnysMonitorWindowActivityPlugin extends AnysPlugin {
 
     init() {
         if (this.anys.options.activity) {
-            // 一进来就记录
+            // record right now
             this.anys.write(enterLog);
         }
     }

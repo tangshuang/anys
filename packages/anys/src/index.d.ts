@@ -48,9 +48,7 @@ type LogData = {
     /**
      * log detail information
      */
-    detail?: string,
-
-    [key: string]: string | number | boolean,
+    detail?: any,
 }
 
 export class Anys {
