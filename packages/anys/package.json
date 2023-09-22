@@ -1,6 +1,6 @@
 {
   "name": "anys",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "The most agile javascript monitor project.",
   "main": "src/index.js",
   "type": "module",

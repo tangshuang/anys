@@ -1,13 +1,13 @@
 {
   "name": "anys-shared",
-  "version": "2.0.0",
+  "version": "2.0.2",
   "description": "",
   "main": "src/index.js",
   "type": "module",
   "author": "tangshuang",
   "license": "Apache-2.0",
   "dependencies": {
-    "anys": "^2.0.0"
+    "anys": "^2.0.2"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
