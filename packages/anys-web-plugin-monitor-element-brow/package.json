@@ -1,6 +1,6 @@
 {
   "name": "anys-web-plugin-monitor-element-brow",
-  "version": "2.0.2",
+  "version": "3.0.0",
   "description": "",
   "main": "src/index.js",
   "type": "module",
@@ -11,7 +11,7 @@
   "author": "tangshuang",
   "license": "Apache-2.0",
   "dependencies": {
-    "anys-shared": "^2.0.2"
+    "anys-shared": "^3.0.0"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
