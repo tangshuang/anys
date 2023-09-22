@@ -3,6 +3,7 @@
 import path from 'path';
 import TerserPlugin from 'terser-webpack-plugin';
 import { fileURLToPath } from 'url';
+import babelConfig from './babel.config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -50,6 +51,7 @@ export default {
             {
                 test: /\.js$/,
                 loader: 'babel-loader',
+                options: babelConfig,
             },
         ],
     },
