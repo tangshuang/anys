@@ -39,7 +39,9 @@ export class AnysStoreOfflinePlugin {
             ],
         });
         this.db = idb.use(storeName);
+    }
 
+    ready() {
         /**
          * clear logs which should be delete from db
          */

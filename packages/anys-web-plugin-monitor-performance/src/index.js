@@ -127,7 +127,7 @@ export class AnysMonitorPerformancePlugin extends AnysPlugin {
     /**
      * @private
      */
-    init() {
+    ready() {
         if (this.anys.options.performance && !this.hasReported) {
             const log = {
                 type: 'performance.navigation',

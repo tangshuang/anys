@@ -13,7 +13,7 @@ export class AnysMonitorWindowCrashPlugin extends AnysPlugin {
         };
     }
 
-    init() {
+    ready() {
         const channel = new BroadcastChannel(`anys_for_crash:${id}`);
         channel.onmessage = (e) => {
             const { data } = e;
