@@ -4,19 +4,6 @@ import { InDB } from 'indb/es/index.js';
 export class AnysStoreOfflinePlugin {
     constructor(anys) {
         this.anys = anys;
-        const storeName = 'anyslogs';
-        const idb = new InDB({
-            name: this.anys.options.namespace,
-            version: 1,
-            stores: [
-                {
-                    name: storeName,
-                    primaryKeyPath: '_id',
-                    autoIncrement: true,
-                },
-            ],
-        });
-        this.db = idb.use(storeName);
         this.queue = new AsyncQueue();
     }
 
@@ -39,6 +26,20 @@ export class AnysStoreOfflinePlugin {
     }
 
     init() {
+        const storeName = 'anyslogs';
+        const idb = new InDB({
+            name: this.anys.options.namespace,
+            version: 1,
+            stores: [
+                {
+                    name: storeName,
+                    primaryKeyPath: '_id',
+                    autoIncrement: true,
+                },
+            ],
+        });
+        this.db = idb.use(storeName);
+
         /**
          * clear logs which should be delete from db
          */

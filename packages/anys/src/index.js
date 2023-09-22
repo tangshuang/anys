@@ -8,8 +8,8 @@ import {
 
 export class Anys {
     constructor(options) {
-        this.$events = [];
-        this.$queue = [];
+        this._events = [];
+        this._queue = [];
 
         const Constructor = getConstructorOf(this);
 
@@ -30,7 +30,7 @@ export class Anys {
         } = options || {};
 
         /**
-         * generate this.$plugins, this.options, this.filters
+         * generate this.plugins, this.options, this.filters
          * these should be generated when constrcutor processing
          */
 
@@ -104,7 +104,7 @@ export class Anys {
             }
         });
 
-        this.$plugins = plugins;
+        this._pluginList = plugins;
         this.plugins = pluginSet;
         this.options = { ...defaultOptions, ...pluginOptions, ...givenOptions };
         this.filters = [...defaultFilters, ...pluginFilters, ...givenFilters];
@@ -156,36 +156,23 @@ export class Anys {
                 configurable: true,
             },
         });
-        this.$basicLog = basicLog;
+        this._basicLog = basicLog;
 
         /**
          * setup instance
          */
 
         this.invoke('init');
+        this._inited = true;
+        this.invoke('ready');
 
         if (this.options.autoStart) {
             this.start();
         }
-
-        function objectValues(obj) {
-            const keys = Object.keys(obj);
-            const values = keys.map(key => obj[key]);
-            return values;
-        }
-
-        function objectAssign(obj1, obj2) {
-            const keys = Object.keys(obj2);
-            keys.forEach((key) => {
-                const value = obj2[key];
-                obj1[key] = value;
-            });
-            return obj1;
-        }
     }
 
     define(key, get) {
-        Object.defineProperty(this.$basicLog, key, {
+        Object.defineProperty(this._basicLog, key, {
             get,
             enumerable: true,
             configurable: true,
@@ -193,19 +180,19 @@ export class Anys {
     }
 
     on(event, callback) {
-        this.$events.push([event, callback]);
+        this._events.push([event, callback]);
     }
 
     off(event, callback) {
-        this.$events.forEach((item, i) => {
+        this._events.forEach((item, i) => {
             if (item[0] === event && item[1] === callback) {
-                this.$events.splice(i, 1);
+                this._events.splice(i, 1);
             }
         });
     }
 
     emit(event, ...args) {
-        this.$events.forEach((item) => {
+        this._events.forEach((item) => {
             if (item[0] === event || item[0] === '*') {
                 item[1](...args);
             }
@@ -213,8 +200,8 @@ export class Anys {
     }
 
     invoke(type, ...args) {
-        for (let i = 0, len = this.$plugins.length; i < len; i += 1) {
-            const plugin = this.$plugins[i];
+        for (let i = 0, len = this._pluginList.length; i < len; i += 1) {
+            const plugin = this._pluginList[i];
             if (!plugin[type]) {
                 continue;
             }
@@ -243,7 +230,11 @@ export class Anys {
     }
 
     write(log) {
-        const data = { ...this.$basicLog, ...log };
+        if (!this._inited) {
+            throw new Error('could not write before ready');
+        }
+
+        const data = { ...this._basicLog, ...log };
         // check wheather the log can be write into
         const { filters } = this;
         for (let i = 0, len = filters.length; i < len; i += 1) {
@@ -258,13 +249,17 @@ export class Anys {
     }
 
     report(message) {
+        if (!this._inited) {
+            throw new Error('could not report before ready');
+        }
+
         let resolve, reject;
         const defer = new Promise((ro, re) => {
             resolve = ro;
             reject = re;
         });
         const signal = { message, resolve, reject };
-        this.$queue.push(signal);
+        this._queue.push(signal);
 
         this._reporting = false;
         const run = () => {
@@ -274,7 +269,7 @@ export class Anys {
 
             this._reporting = true;
 
-            const signal = this.$queue.shift();
+            const signal = this._queue.shift();
             if (!signal) {
                 return;
             }
@@ -284,8 +279,8 @@ export class Anys {
 
             const operators = [];
 
-            for (let i = 0, len = this.$plugins.length; i < len; i += 1) {
-                const plugin = this.$plugins[i];
+            for (let i = 0, len = this._pluginList.length; i < len; i += 1) {
+                const plugin = this._pluginList[i];
                 const operator = {};
                 let flag = 0;
                 if (isFunction(plugin.read)) {
@@ -365,4 +360,19 @@ export class Anys {
          */
         autoStart: true,
     };
+}
+
+function objectValues(obj) {
+    const keys = Object.keys(obj);
+    const values = keys.map(key => obj[key]);
+    return values;
+}
+
+function objectAssign(obj1, obj2) {
+    const keys = Object.keys(obj2);
+    keys.forEach((key) => {
+        const value = obj2[key];
+        obj1[key] = value;
+    });
+    return obj1;
 }

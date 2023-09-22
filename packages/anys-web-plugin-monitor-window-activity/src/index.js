@@ -13,7 +13,7 @@ export class AnysMonitorWindowActivityPlugin extends AnysPlugin {
         };
     }
 
-    init() {
+    ready() {
         if (this.anys.options.activity) {
             // record right now
             this.anys.write(enterLog);
