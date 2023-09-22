@@ -243,20 +243,18 @@ export class Anys {
     }
 
     write(log) {
-        setTimeout(() => {
-            const data = { ...this.$basicLog, ...log };
-            // check wheather the log can be write into
-            const { filters } = this;
-            for (let i = 0, len = filters.length; i < len; i += 1) {
-                const filter = filters[i];
-                if (!filter(data)) {
-                    return;
-                }
+        const data = { ...this.$basicLog, ...log };
+        // check wheather the log can be write into
+        const { filters } = this;
+        for (let i = 0, len = filters.length; i < len; i += 1) {
+            const filter = filters[i];
+            if (!filter(data)) {
+                return;
             }
+        }
 
-            this.invoke('write', data);
-            this.emit('write', data);
-        }, 0);
+        this.invoke('write', data);
+        this.emit('write', data);
     }
 
     report(message) {
@@ -269,7 +267,7 @@ export class Anys {
         this.$queue.push(signal);
 
         this._reporting = false;
-        const run = () => setTimeout(() => {
+        const run = () => {
             if (this._reporting) {
                 return;
             }
@@ -349,7 +347,7 @@ export class Anys {
                 this._reporting = false;
                 run();
             });
-        }, 0);
+        };
 
         run();
 
