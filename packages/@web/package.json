@@ -1,6 +1,6 @@
 {
   "name": "anys-web",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "",
   "main": "src/index.js",
   "type": "module",
@@ -24,7 +24,7 @@
     "anys-web-plugin-monitor-window-activity": "^3.0.2",
     "anys-web-plugin-monitor-window-size": "^3.0.2",
     "anys-web-plugin-send-by-ajax": "^3.0.2",
-    "anys-web-plugin-store-offline": "^3.0.2"
+    "anys-web-plugin-store-offline": "^3.0.3"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
