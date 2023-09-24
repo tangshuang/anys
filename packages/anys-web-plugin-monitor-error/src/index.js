@@ -22,6 +22,7 @@ export class AnysMonitorErrorPlugin extends AnysPlugin {
                 const { name, stack } = error || {};
                 const log = {
                     type: 'JSError',
+                    level: 490,
                     time: Date.now(),
                     msg: message,
                     name,
@@ -36,6 +37,7 @@ export class AnysMonitorErrorPlugin extends AnysPlugin {
             } else if (target instanceof HTMLElement) {
                 const log = {
                     type: 'DownloadError',
+                    level: 489,
                     time: Date.now(),
                     name: target.tagName,
                     detail: {
@@ -56,6 +58,7 @@ export class AnysMonitorErrorPlugin extends AnysPlugin {
             if (typeof reason === 'string') {
                 const log = {
                     type: 'PromiseRejection',
+                    level: 485,
                     time: Date.now(),
                     detail: { message: reason },
                 };
@@ -64,6 +67,7 @@ export class AnysMonitorErrorPlugin extends AnysPlugin {
                 const { name, message } = reason;
                 const log = {
                     type: 'PromiseRejection',
+                    level: 485,
                     time: Date.now(),
                     name,
                     detail: { message },
