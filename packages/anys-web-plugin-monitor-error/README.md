@@ -45,6 +45,7 @@ const anys = new Anys({
 ```
 {
     type: 'JSError',
+    level: 490,
     time: Date.now(),
     msg: message,
     name,
@@ -60,6 +61,7 @@ const anys = new Anys({
 ```
 {
     type: 'DownloadError',
+    level: 489,
     time: Date.now(),
     name: target.tagName,
     detail: {
@@ -73,6 +75,7 @@ const anys = new Anys({
 ```
 {
     type: 'PromiseRejection',
+    level: 485,
     time: Date.now(),
     name,
     detail: { message },
