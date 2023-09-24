@@ -1,6 +1,6 @@
 {
   "name": "anys-web",
-  "version": "3.0.3",
+  "version": "3.1.0",
   "description": "",
   "main": "src/index.js",
   "type": "module",
@@ -11,20 +11,20 @@
   "author": "tangshuang",
   "license": "Apache-2.0",
   "dependencies": {
-    "anys": "^3.0.2",
-    "anys-shared": "^3.0.2",
-    "anys-web-plugin-identify": "^3.0.0",
-    "anys-web-plugin-monitor-ajax": "^3.0.2",
-    "anys-web-plugin-monitor-dom-mutation": "^3.0.2",
-    "anys-web-plugin-monitor-input-event": "^3.0.2",
-    "anys-web-plugin-monitor-mouse-event": "^3.0.2",
-    "anys-web-plugin-monitor-scroll-event": "^3.0.2",
-    "anys-web-plugin-monitor-touch-event": "^3.0.2",
-    "anys-web-plugin-monitor-url": "^3.0.2",
-    "anys-web-plugin-monitor-window-activity": "^3.0.2",
-    "anys-web-plugin-monitor-window-size": "^3.0.2",
-    "anys-web-plugin-send-by-ajax": "^3.0.2",
-    "anys-web-plugin-store-offline": "^3.0.3"
+    "anys": "^3.1.0",
+    "anys-shared": "^3.1.0",
+    "anys-web-plugin-identify": "^3.1.0",
+    "anys-web-plugin-monitor-ajax": "^3.1.0",
+    "anys-web-plugin-monitor-dom-mutation": "^3.1.0",
+    "anys-web-plugin-monitor-input-event": "^3.1.0",
+    "anys-web-plugin-monitor-mouse-event": "^3.1.0",
+    "anys-web-plugin-monitor-scroll-event": "^3.1.0",
+    "anys-web-plugin-monitor-touch-event": "^3.1.0",
+    "anys-web-plugin-monitor-url": "^3.1.0",
+    "anys-web-plugin-monitor-window-activity": "^3.1.0",
+    "anys-web-plugin-monitor-window-size": "^3.1.0",
+    "anys-web-plugin-send-by-ajax": "^3.1.0",
+    "anys-web-plugin-store-offline": "^3.1.0"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
