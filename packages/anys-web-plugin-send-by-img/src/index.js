@@ -17,7 +17,7 @@ export class AnysSendByImgPlugin extends AnysPlugin {
         return () => this.anys.off('write', listener);
     }
 
-    send(_, logs) {
+    send(logs) {
         const { reportUrl } = this.anys.options;
         const preLen = reportUrl.length + 1; // `${reportUrl}?`
         logs.forEach((log) => {

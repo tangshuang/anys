@@ -117,7 +117,7 @@ export class AnysRecorderPlugin extends AnysPlugin {
         return this.offlineStore.read(message);
     }
 
-    send(logs) {
+    arrange(logs) {
         const groups = [];
         let i = 0;
 
@@ -129,30 +129,30 @@ export class AnysRecorderPlugin extends AnysPlugin {
             }
         });
 
-        const defers = groups.map((data) => {
-            const items = [];
-            const ids = [];
+        return groups;
+    }
 
-            data.forEach((item) => {
-                const { _id, ...info } = item;
-                ids.push(_id);
-                items.push(info);
-            });
+    send(data) {
+        const items = [];
+        const ids = [];
 
-            if (!items.length) {
-                return;
-            }
-
-            const { reportUrl, reportParams } = this.anys.options;
-            const url = reportParams ? replaceUrlSearch(reportUrl, reportParams) : reportUrl;
-            return ajaxPost(url, { data: items }).then(() => {
-                ids.forEach((id) => {
-                    delete this.cache[id];
-                });
-            });
+        data.forEach((item) => {
+            const { _id, ...info } = item;
+            ids.push(_id);
+            items.push(info);
         });
 
-        return Promise.all(defers);
+        if (!items.length) {
+            return;
+        }
+
+        const { reportUrl, reportParams } = this.anys.options;
+        const url = reportParams ? replaceUrlSearch(reportUrl, reportParams) : reportUrl;
+        return ajaxPost(url, { data: items }).then(() => {
+            ids.forEach((id) => {
+                delete this.cache[id];
+            });
+        });
     }
 
     clear() {

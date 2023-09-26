@@ -7,6 +7,7 @@ export class AnysSendByBeaconPlugin extends AnysPlugin {
             reportUrl: new Error('options.reportUrl is required!'),
             reportParams: null,
             reportInterval: 0,
+            reportChunkCount: 200,
         };
     }
 
@@ -23,7 +24,23 @@ export class AnysSendByBeaconPlugin extends AnysPlugin {
         return () => this.anys.off('write', listener);
     }
 
-    async send(_, logs) {
+    arrange(_, logs) {
+        const { reportChunkCount } = this.anys.options;
+        const groups = [];
+        let i = 0;
+
+        logs.forEach((item) => {
+            groups[i] = groups[i] || [];
+            groups[i].push(item);
+            if (groups[i].length > reportChunkCount) {
+                i ++;
+            }
+        });
+
+        return groups;
+    }
+
+    async send(logs) {
         const { reportUrl, reportParams } = this.anys.options;
         const url = reportParams ? replaceUrlSearch(reportUrl, reportParams) : reportUrl;
         try {

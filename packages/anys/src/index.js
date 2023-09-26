@@ -287,6 +287,10 @@ export class Anys {
                     operator.read = plugin.read.bind(plugin);
                     flag = 1;
                 }
+                if (isFunction(plugin.arrange)) {
+                    operator.arrange = plugin.arrange.bind(plugin);
+                    flag = 1;
+                }
                 if (isFunction(plugin.send)) {
                     operator.send = plugin.send.bind(plugin);
                     flag = 1;
@@ -324,9 +328,13 @@ export class Anys {
                     if (!data.length) {
                         return;
                     }
-                    this.emit('send', data);
                     return Promise.all(operators.map((operator) => {
-                        return runAsync(operator.send, operator.data, data);
+                        const defer = operator.arrange ? runAsync(operator.arrange, operator.data, data) : Promise.resolve([data]);
+                        return defer.then((chunks) => {
+                            return Promise.all(chunks.map((chunk) => {
+                                return runAsync(operator.send, chunk);
+                            }));
+                        });
                     })).then(() => data);
                 },
                 (data) => {
