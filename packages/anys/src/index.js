@@ -331,20 +331,16 @@ export class Anys {
                     return Promise.all(operators.map((operator) => {
                         const defer = operator.arrange ? runAsync(operator.arrange, operator.data, data) : Promise.resolve([data]);
                         return defer.then((chunks) => {
+                            this.emit('arrange', chunks);
                             return Promise.all(chunks.map((chunk) => {
-                                return runAsync(operator.send, chunk);
+                                this.emit('send', chunk);
+                                return runAsync(operator.send, chunk).then(() => {
+                                    this.emit('clear', chunk);
+                                    return runAsync(operator.clear, chunk);
+                                });
                             }));
                         });
-                    })).then(() => data);
-                },
-                (data) => {
-                    if (!data) {
-                        return;
-                    }
-                    this.emit('clear', data);
-                    return Promise.all(operators.map((operator) => {
-                        return runAsync(operator.clear, operator.data);
-                    }));
+                    })).then(() => {});
                 },
             ).then(resolve, reject).finally(() => {
                 this._reporting = false;
