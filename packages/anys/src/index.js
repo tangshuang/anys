@@ -244,8 +244,19 @@ export class Anys {
             }
         }
 
-        this.invoke('write', data);
         this.emit('write', data);
+
+        for (let i = 0, len = this._pluginList.length; i < len; i += 1) {
+            const plugin = this._pluginList[i];
+            if (isFunction(plugin.filter)) {
+                if (!plugin.filter(data)) {
+                    continue;
+                }
+            }
+            if (isFunction(plugin.write)) {
+                plugin.write(data);
+            }
+        }
     }
 
     report(message) {
