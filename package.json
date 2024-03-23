@@ -8,9 +8,9 @@
     "install": "lerna clean --yes && lerna bootstrap",
     "build": "lerna run build",
     "version": "lerna version --conventional-commits --no-commit-hooks --no-push --no-changelog --yes",
-    "publish": "lerna publish from-package --yes",
+    "prepublishOnly": "lerna publish from-package --yes",
     "license": "node scripts/copy-license",
-    "dist": "npm run build && npm run license && npm run version && npm run publish"
+    "dist": "npm run build && npm run license && npm run version && npm run prepublishOnly"
   },
   "devDependencies": {
     "@babel/cli": "^7.21.5",

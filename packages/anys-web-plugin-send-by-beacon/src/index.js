@@ -42,7 +42,8 @@ export class AnysSendByBeaconPlugin extends AnysPlugin {
 
     async send(logs) {
         const { reportUrl, reportParams } = this.anys.options;
-        const url = reportParams ? replaceUrlSearch(reportUrl, reportParams) : reportUrl;
+        const params = typeof reportParams === 'function' ? reportParams() : reportParams;
+        const url = reportParams ? replaceUrlSearch(reportUrl, params) : reportUrl;
         try {
             navigator.sendBeacon(url, JSON.stringify({ data: logs }));
         }
