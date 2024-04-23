@@ -1,5 +1,4 @@
 import { AnysPlugin, ajaxPost, replaceUrlSearch } from 'anys-shared';
-import { AnysMonitorAjaxPlugin } from 'anys-web-plugin-monitor-ajax';
 import { AnysIdentifyPlugin } from 'anys-web-plugin-identify';
 import { AnysMonitorInputEventPlugin } from 'anys-web-plugin-monitor-input-event';
 import { AnysMonitorMouseEventPlugin } from 'anys-web-plugin-monitor-mouse-event';
@@ -11,14 +10,13 @@ import { AnysMonitorDOMMutationPlugin } from 'anys-web-plugin-monitor-dom-mutati
 import { AnysMonitorWindowSizePlugin } from 'anys-web-plugin-monitor-window-size';
 import { AnysMonitorScrollEventPlugin } from 'anys-web-plugin-monitor-scroll-event';
 
-export class AnysRecorderPlugin extends AnysPlugin {
+export class AnysOfflineTracerPlugin extends AnysPlugin {
     static dependencies = [
         AnysStoreOfflinePlugin,
         AnysMonitorUrlPlugin,
         AnysMonitorWindowSizePlugin,
         AnysMonitorDOMMutationPlugin,
         AnysIdentifyPlugin,
-        AnysMonitorAjaxPlugin,
         AnysMonitorInputEventPlugin,
         AnysMonitorMouseEventPlugin,
         AnysMonitorWindowActivityPlugin,
@@ -83,7 +81,7 @@ export class AnysRecorderPlugin extends AnysPlugin {
             isUnloaded = 1;
 
             const ids = Object.keys(this.cache);
-            const logs = Object.values(this.cache);
+            const logs = { data: Object.values(this.cache), by: 'beacon' };
             if (ids.length) {
                 this.offlineStore.remove(ids); // async may not executed
                 navigator.sendBeacon(this.anys.options.reportUrl, JSON.stringify(logs));
@@ -147,7 +145,8 @@ export class AnysRecorderPlugin extends AnysPlugin {
         }
 
         const { reportUrl, reportParams } = this.anys.options;
-        const url = reportParams ? replaceUrlSearch(reportUrl, reportParams) : reportUrl;
+        const params = typeof reportParams === 'function' ? reportParams() : reportParams;
+        const url = params ? replaceUrlSearch(reportUrl, params) : reportUrl;
         return ajaxPost(url, { data: items }).then(() => {
             ids.forEach((id) => {
                 delete this.cache[id];

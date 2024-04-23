@@ -31,10 +31,7 @@ type LogData = {
      */
     time: number,
     /**
-     * log level,
-     * 0-10 report immediately
-     * 11-100 report later with logs bundle
-     * 100+ do not report automaticly, should report by manually
+     * log level
      */
     level?: number,
     /**
@@ -49,6 +46,8 @@ type LogData = {
      * log detail information
      */
     detail?: any,
+
+    [key: string]: any,
 }
 
 export class Anys {
@@ -82,7 +81,9 @@ export class Anys {
 
     write(log: LogData): void;
 
-    report(message?: any): void;
+    report(message?: any): Promise<void>;
+
+    send(log: LogData | LogData[]): Promise<void>;
 
     stop(): void;
 }

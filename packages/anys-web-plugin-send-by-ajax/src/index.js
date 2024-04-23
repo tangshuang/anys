@@ -40,12 +40,12 @@ export class AnysSendByAjaxPlugin extends AnysPlugin {
         return groups;
     }
 
-    async send(logs) {
+    send(logs) {
         const { reportUrl, reportParams } = this.anys.options;
         const params = typeof reportParams === 'function' ? reportParams() : reportParams;
-        const url = reportParams ? replaceUrlSearch(reportUrl, params) : reportUrl;
+        const url = params ? replaceUrlSearch(reportUrl, params) : reportUrl;
         try {
-            await ajaxPost(url, { data: logs });
+            return ajaxPost(url, { data: logs });
         }
         catch (e) {
             console.error(e);

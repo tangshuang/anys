@@ -2,21 +2,14 @@
 
 import { AnysPlugin, getPath } from 'anys-shared';
 
+let customElementRegistered = false;
 let browCallback = null;
 
 class AnysBrowElement extends HTMLDivElement {
     connectedCallback() {
-        window.addEventListener('load', () => {
-            browCallback?.(this);
-        });
+        browCallback?.(this);
     }
 }
-
-/**
- * @example
- * <div is="anys-brow"></div>
- */
-customElements.define('anys-brow', AnysBrowElement, { extends: 'div' });
 
 export class AnysMonitorElementBrowPlugin extends AnysPlugin {
     options() {
@@ -82,6 +75,15 @@ export class AnysMonitorElementBrowPlugin extends AnysPlugin {
 
             observers[threshold].observe(element);
         };
+
+        if (!customElementRegistered) {
+            /**
+             * @example
+             * <div is="anys-brow" data-name="report-point-name"></div>
+             * Notice: data-name is required
+             */
+            customElements.define('anys-brow', AnysBrowElement, { extends: 'div' });
+        }
 
         return () => {
             Object.values(observers).forEach((observer) => {

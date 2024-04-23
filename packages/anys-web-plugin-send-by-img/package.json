@@ -1,17 +1,19 @@
 {
   "name": "anys-web-plugin-send-by-img",
-  "version": "6.0.0",
+  "version": "7.0.0",
   "description": "",
   "main": "src/index.js",
   "type": "module",
-  "scripts": {
-    "build": "rimraf dist && webpack --config ../../webpack.config.js"
-  },
   "keywords": [],
   "author": "tangshuang",
   "license": "Apache-2.0",
+  "homepage": "https://github.com/tangshuang/anys",
+  "scripts": {
+    "build": "rimraf dist && webpack --config ../../webpack.config.js",
+    "republish": "(can-npm-publish && npm publish) || exit 0"
+  },
   "dependencies": {
-    "anys-shared": "^6.0.0"
+    "anys-shared": "^7.0.0"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"

@@ -1,4 +1,4 @@
-import { replaceUrlSearch, AnysPlugin } from 'anys-shared';
+import { replaceUrlSearch, AnysPlugin, ajaxPost } from 'anys-shared';
 
 export class AnysSendByBeaconPlugin extends AnysPlugin {
     options() {
@@ -40,15 +40,17 @@ export class AnysSendByBeaconPlugin extends AnysPlugin {
         return groups;
     }
 
-    async send(logs) {
+    send(logs) {
         const { reportUrl, reportParams } = this.anys.options;
         const params = typeof reportParams === 'function' ? reportParams() : reportParams;
-        const url = reportParams ? replaceUrlSearch(reportUrl, params) : reportUrl;
-        try {
-            navigator.sendBeacon(url, JSON.stringify({ data: logs }));
+        const url = params ? replaceUrlSearch(reportUrl, params) : reportUrl;
+
+        // sendBeacon is not supported
+        if (typeof navigator?.sendBeacon === 'undefined') {
+            ajaxPost(url, { data: logs });
+            return;
         }
-        catch (e) {
-            console.error(e);
-        }
+
+        navigator.sendBeacon(url, JSON.stringify({ data: logs, by: 'beacon' }));
     }
 }

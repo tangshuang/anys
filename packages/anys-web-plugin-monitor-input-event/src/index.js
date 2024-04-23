@@ -23,8 +23,8 @@ export class AnysMonitorInputEventPlugin extends AnysPlugin {
 
             const { tagName, value } = target;
 
-            // ignore input when set anys-ignore attribute
-            if (target.getAttribute('anys-ignore')) {
+            // ignore input when set data-ignore attribute
+            if (target.getAttribute('data-ignore')) {
                 return;
             }
 

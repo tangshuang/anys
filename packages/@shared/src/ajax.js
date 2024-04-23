@@ -7,7 +7,7 @@ export function ajaxPost(url, data) {
         http.open('POST', url, true);
         http.onreadystatechange = function() {
             if(http.readyState == 4) {
-                if (http.status == 200 || http.status === 0) {
+                if (http.status == 200) {
                     resolve(http.responseText);
                 }
                 else {

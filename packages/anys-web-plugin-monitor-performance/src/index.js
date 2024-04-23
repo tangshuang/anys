@@ -1,79 +1,132 @@
 import { AnysPlugin, camelCase, Evt } from 'anys-shared';
 import { createRandomString } from 'ts-fns';
 
-/**
- * @type PerformanceNavigationTiming
- */
-// @ts-ignore
-const navigation = performance.getEntriesByType('navigation')[0];
-const {
-    name: url,
-    startTime,
-    unloadEventStart,
-    unloadEventEnd,
-    redirectStart,
-    redirectEnd,
-    workerStart,
-    fetchStart,
-    domainLookupStart,
-    domainLookupEnd,
-    connectStart,
-    secureConnectionStart,
-    connectEnd,
-    requestStart,
-    responseStart,
-    responseEnd,
-    domInteractive,
-    domContentLoadedEventStart,
-    domContentLoadedEventEnd,
-    domComplete,
-    loadEventStart,
-    loadEventEnd,
-    redirectCount,
-    type,
-    decodedBodySize,
-    encodedBodySize,
-    transferSize,
-    nextHopProtocol,
-} = navigation;
-const { timeOrigin } = performance;
+function getInitNavigationPerformanceData() {
+    const { timeOrigin } = performance;
+    try {
+        /**
+         * @type PerformanceNavigationTiming
+         */
+        // @ts-ignore
+        const navigation = performance.getEntriesByType('navigation')[0];
+        const {
+            startTime,
+            unloadEventStart,
+            unloadEventEnd,
+            redirectStart,
+            redirectEnd,
+            workerStart,
+            fetchStart,
+            domainLookupStart,
+            domainLookupEnd,
+            connectStart,
+            secureConnectionStart,
+            connectEnd,
+            requestStart,
+            responseStart,
+            responseEnd,
+            domInteractive,
+            domContentLoadedEventStart,
+            domContentLoadedEventEnd,
+            domComplete,
+            loadEventStart,
+            loadEventEnd,
+            redirectCount,
+            type,
+            decodedBodySize,
+            encodedBodySize,
+            transferSize,
+            nextHopProtocol,
+        } = navigation;
 
-// @ts-ignore
-const { firstPaint: FP, firstContentfulPaint: FCP } = [...performance.getEntriesByType('paint')].reduce((map, entry) => {
-    map[camelCase(entry.name)] = entry.startTime;
-    return map;
-}, {});
+        // @ts-ignore
+        const { firstPaint: FP, firstContentfulPaint: FCP } = [...performance.getEntriesByType('paint')].reduce((map, entry) => {
+            map[camelCase(entry.name)] = entry.startTime;
+            return map;
+        }, {});
 
-const TCP = connectEnd - connectStart;
-const DNS = domainLookupEnd - domainLookupStart;
-const TLS = requestStart - secureConnectionStart;
-const REQUEST = responseStart - requestStart;
-const RESPONSE = responseEnd - responseStart;
-const REDIRECT = redirectEnd - redirectStart;
-const COMPRESSED = decodedBodySize !== encodedBodySize;
-const CACHED = !transferSize;
-const PROTOCOL = nextHopProtocol;
-const TTFB = responseStart - startTime;
+        const TCP = connectEnd - connectStart;
+        const DNS = domainLookupEnd - domainLookupStart;
+        const TLS = requestStart - secureConnectionStart;
+        const REQUEST = responseStart - requestStart;
+        const RESPONSE = responseEnd - responseStart;
+        const REDIRECT = redirectEnd - redirectStart;
+        const COMPRESSED = decodedBodySize !== encodedBodySize;
+        const CACHED = !transferSize;
+        const PROTOCOL = nextHopProtocol;
+        const TTFB = responseStart - startTime;
 
-let LCP;
-new PerformanceObserver((entryList) => {
-    for (const entry of entryList.getEntries()) {
-        if(!LCP) {
-            LCP = entry.startTime;
-        }
+        let LCP;
+        new PerformanceObserver((entryList) => {
+            for (const entry of entryList.getEntries()) {
+                if(!LCP) {
+                    LCP = entry.startTime;
+                }
+            }
+        }).observe({ type: 'largest-contentful-paint', buffered: true });
+
+        let TTI;
+        new PerformanceObserver((list) => {
+            for (const entry of list.getEntries()) {
+                if(!TTI) {
+                    TTI = entry.startTime;
+                }
+            }
+        }).observe({ entryTypes: ['longtask'] });
+
+        const navigationData = {
+            type,
+            redirectCount,
+            timeOrigin,
+
+            startTime,
+            unloadEventStart,
+            unloadEventEnd,
+            redirectStart,
+            redirectEnd,
+            workerStart,
+            fetchStart,
+            domainLookupStart,
+            domainLookupEnd,
+            connectStart,
+            secureConnectionStart,
+            connectEnd,
+            requestStart,
+            responseStart,
+            responseEnd,
+            domInteractive,
+            domContentLoadedEventStart,
+            domContentLoadedEventEnd,
+            domComplete,
+            loadEventStart,
+            loadEventEnd,
+
+            FP,
+            FCP,
+            TTFB,
+            LCP,
+            TTI,
+
+            TCP,
+            DNS,
+            REQUEST,
+            RESPONSE,
+            REDIRECT,
+            TLS,
+            COMPRESSED,
+            CACHED,
+            PROTOCOL,
+        };
+
+        return navigationData;
     }
-}).observe({ type: 'largest-contentful-paint', buffered: true });
-
-let TTI;
-new PerformanceObserver((list) => {
-    for (const entry of list.getEntries()) {
-        if(!TTI) {
-            TTI = entry.startTime;
-        }
+    catch (e) {
+        console.log(e);
+        return { timeOrigin };
     }
-}).observe({ entryTypes: ['longtask'] });
+}
 
-
+const navigationData = getInitNavigationPerformanceData();
 const evt = new Evt();
 
 const reportedMap = {};
@@ -89,6 +142,7 @@ class AnysPerfElement extends HTMLDivElement {
             return;
         }
 
+        const { timeOrigin, domInteractive } = navigationData;
         const now = performance.now();
         evt.emit('perf', {
             type: 'performance.dom',
@@ -107,12 +161,13 @@ class AnysPerfElement extends HTMLDivElement {
 
 /**
  * @example
- * <div is="anys-perf"></div>
+ * <div is="anys-perf" data-name="report-point-name"></div>
+ * Notice: data-name is required
  */
 customElements.define('anys-perf', AnysPerfElement, { extends: 'div' });
 
 export class AnysMonitorPerformancePlugin extends AnysPlugin {
-    hasReported = 0;
+    hasNavigationReported = 0;
 
     /**
      * @private
@@ -127,91 +182,54 @@ export class AnysMonitorPerformancePlugin extends AnysPlugin {
     /**
      * @private
      */
-    ready() {
-        if (this.anys.options.performance && !this.hasReported) {
+    registerPerformance() {
+        // report navigation when start, only once
+        if (!this.hasNavigationReported) {
             const log = {
                 type: 'performance.navigation',
                 time: Date.now(),
                 detail: {
-                    url,
-                    redirectCount,
-                    type,
-                    timeOrigin,
-
-                    startTime,
-                    unloadEventStart,
-                    unloadEventEnd,
-                    redirectStart,
-                    redirectEnd,
-                    workerStart,
-                    fetchStart,
-                    domainLookupStart,
-                    domainLookupEnd,
-                    connectStart,
-                    secureConnectionStart,
-                    connectEnd,
-                    requestStart,
-                    responseStart,
-                    responseEnd,
-                    domInteractive,
-                    domContentLoadedEventStart,
-                    domContentLoadedEventEnd,
-                    domComplete,
-                    loadEventStart,
-                    loadEventEnd,
-
-                    FP,
-                    FCP,
-                    TTFB,
-                    LCP,
-                    TTI,
-
-                    TCP,
-                    DNS,
-                    REQUEST,
-                    RESPONSE,
-                    REDIRECT,
-                    TLS,
-                    COMPRESSED,
-                    CACHED,
-                    PROTOCOL,
+                    url: window.location.href,
+                    ...navigationData,
                 },
             };
             this.anys.write(log);
-            this.hasReported = 1;
+            this.hasNavigationReported = 1;
         }
-    }
 
-    /**
-     * @private
-     */
-    registerPerformance() {
         const listen = (log) => {
             this.anys.write(log);
         };
         evt.on('perf', listen);
 
-        const observer = new PerformanceObserver((list) => {
-            list.getEntries().forEach((entry) => {
-                const { name, startTime, duration } = entry;
-                const log = {
-                    type: 'performance.measure',
-                    time: Date.now(),
-                    name,
-                    detail: {
-                        timeOrigin,
-                        startTime,
-                        duration,
-                    },
-                };
-                this.anys.write(log);
+        let observer;
+        try {
+            observer = new PerformanceObserver((list) => {
+                list.getEntries().forEach((entry) => {
+                    const { name, startTime, duration } = entry;
+                    const { timeOrigin } = navigationData;
+                    const log = {
+                        type: 'performance.measure',
+                        time: Date.now(),
+                        name,
+                        detail: {
+                            timeOrigin,
+                            startTime,
+                            duration,
+                        },
+                    };
+                    this.anys.write(log);
+                });
             });
-        });
-        observer.observe({ entryTypes: ['measure'] });
+            observer.observe({ entryTypes: ['measure'] });
+        }
+        catch (e) {
+            console.error(e);
+        }
 
         return () => {
             evt.off('perf', listen);
-            observer.disconnect();
+            observer?.disconnect();
         };
     }
 
@@ -233,6 +251,7 @@ export class AnysMonitorPerformancePlugin extends AnysPlugin {
             if (now - firstFrame >= 1000) {
                 const fps = frameList.length;
                 if (fps < (typeof fpsOption === 'number' ? fpsOption : 25)) {
+                    const { timeOrigin } = navigationData;
                     const log = {
                         type: 'performance.fps',
                         time: Date.now(),

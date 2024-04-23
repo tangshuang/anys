@@ -12,29 +12,38 @@ export class AnysIdentifyPlugin {
     }
 
     defines() {
+        const defineClientId = () => {
+            const { namespace } = this.anys.options;
+            const key = `Anys.${namespace}.clientId`;
+            let clientId = localStorage.getItem(key);
+            if (!clientId) {
+                clientId = createRandomString(8);
+                localStorage.setItem(key, clientId);
+            }
+            return clientId;
+        };
+
+        const defineTraceId = () => {
+            const { namespace } = this.anys.options;
+            const key = `Anys.${namespace}.traceId`;
+            let traceId = sessionStorage.getItem(key);
+            if (!traceId) {
+                traceId = createRandomString(8);
+                sessionStorage.setItem(key, traceId);
+            }
+            return traceId;
+        }
+
         return {
-            client: this.defineClientId.bind(this),
-            trace: this.defineTraceId.bind(this),
+            client: defineClientId,
+            trace: defineTraceId,
         };
     }
 
-    defineClientId() {
-        const { namespace } = this.anys.options;
-        const key = `Anys.${namespace}.clientId`;
-        let clientId = localStorage.getItem(key);
-        if (!clientId) {
-            clientId = createRandomString(8);
-            sessionStorage.setItem(key, clientId);
-        }
-        return clientId;
-    }
-
-    defineTraceId() {
+    refreshTraceId() {
         const { namespace } = this.anys.options;
         const key = `Anys.${namespace}.traceId`;
         const traceId = createRandomString(8);
-        // update each time when invoke refreshTraceId
         sessionStorage.setItem(key, traceId);
-        return traceId;
     }
 }

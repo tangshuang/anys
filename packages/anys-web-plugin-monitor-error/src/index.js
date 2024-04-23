@@ -22,7 +22,7 @@ export class AnysMonitorErrorPlugin extends AnysPlugin {
                 const { name, stack } = error || {};
                 const log = {
                     type: 'JSError',
-                    level: 490,
+                    level: 590,
                     time: Date.now(),
                     msg: message,
                     name,
@@ -33,23 +33,22 @@ export class AnysMonitorErrorPlugin extends AnysPlugin {
                         lineno,
                     },
                 };
-                this.anys.write(log);
+                this.anys.send(log);
             } else if (target instanceof HTMLElement) {
                 const log = {
                     type: 'DownloadError',
-                    level: 489,
+                    level: 589,
                     time: Date.now(),
                     name: target.tagName,
                     detail: {
                         e: getPath(target),
                     },
                 };
-                this.anys.write(log);
+                this.anys.send(log);
             }
         };
-        const type = 'error';
-        window.addEventListener(type, listener, true);
-        return () => window.removeEventListener(type, listener);
+        window.addEventListener('error', listener, true);
+        return () => window.removeEventListener('error', listener);
     }
 
     registerUnhandledrejection() {
@@ -58,7 +57,7 @@ export class AnysMonitorErrorPlugin extends AnysPlugin {
             if (typeof reason === 'string') {
                 const log = {
                     type: 'PromiseRejection',
-                    level: 485,
+                    level: 585,
                     time: Date.now(),
                     detail: { message: reason },
                 };
@@ -67,7 +66,7 @@ export class AnysMonitorErrorPlugin extends AnysPlugin {
                 const { name, message } = reason;
                 const log = {
                     type: 'PromiseRejection',
-                    level: 485,
+                    level: 585,
                     time: Date.now(),
                     name,
                     detail: { message },

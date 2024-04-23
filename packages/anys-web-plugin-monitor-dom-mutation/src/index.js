@@ -1,10 +1,13 @@
-import { AnysPlugin, getPath, tryRun } from 'anys-shared';
-
-/**
- * window.frames['iframeId']
- */
+import { AnysPlugin, getPath } from 'anys-shared';
+import { createRandomString } from 'ts-fns';
 
 export class AnysMonitorDOMMutationPlugin extends AnysPlugin {
+    init() {
+        this.currentSnapshotId = '';
+        this.currentMutationId = '';
+        this.currentMutationNo = 0;
+    }
+
     options() {
         return {
             mutation: true,
@@ -13,12 +16,20 @@ export class AnysMonitorDOMMutationPlugin extends AnysPlugin {
 
     registerMutation() {
         const observer = this.createObserver((logs) => {
+            const mutationId = createRandomString(8);
+            const number = this.currentMutationNo + 1;
             const log = {
                 type: 'mutation',
                 time: Date.now(),
                 detail: logs,
+                ssid: this.currentSnapshotId,
+                ssno: number,
+                curr: mutationId,
+                prev: this.currentMutationId,
             };
             this.anys.write(log);
+            this.currentMutationId = mutationId;
+            this.currentMutationNo = number;
         });
 
         // record after loaded
@@ -33,13 +44,20 @@ export class AnysMonitorDOMMutationPlugin extends AnysPlugin {
             buildPath(document.documentElement);
         });
 
+        const autoRecordWhenRefreshTrace = () => {
+            this.recordSnapshot();
+        };
+        this.anys.on('refreshTraceId', autoRecordWhenRefreshTrace);
+
         return () => {
             observer.disconnect();
+            this.anys.off('refreshTraceId', autoRecordWhenRefreshTrace);
         };
     }
 
     recordSnapshot() {
         const snapshot = createSnapshot();
+        const snapshotId = createRandomString(8);
 
         const url = window.location.href;
         const a = new URL(url);
@@ -58,18 +76,21 @@ export class AnysMonitorDOMMutationPlugin extends AnysPlugin {
                 hash: a.hash.replace('#', ''),
             },
             detail: snapshot,
+            ssid: snapshotId,
         });
+        this.currentSnapshotId = snapshotId;
+        this.currentMutationNo = 0;
     }
 
     createObserver(callback) {
         const isInIgnore = (node) => {
-            if (node.hasAttribute?.('anys-ignore')) {
+            if (node.hasAttribute?.('data-ignore')) {
                 return true;
             }
 
             let parent = node.parentNode;
             while (parent) {
-                if (parent.hasAttribute?.('anys-ignore')) {
+                if (parent.hasAttribute?.('data-ignore')) {
                     return true;
                 }
                 parent = parent.parentNode;

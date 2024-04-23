@@ -26,10 +26,10 @@ export class AnysStoreOfflinePlugin {
     }
 
     init() {
-        const storeName = 'anyslogs';
+        const storeName = 'logs';
         const idb = new InDB({
             name: this.anys.options.namespace,
-            version: 1,
+            version: 2,
             stores: [
                 {
                     name: storeName,

@@ -3,8 +3,7 @@ import { createRandomString } from 'ts-fns';
 
 const evt = new Evt();
 
-// eslint-disable-next-line func-names
-(function () {
+function overwriteXHR() {
     const OXHR = window.XMLHttpRequest;
     // @ts-ignore
     // eslint-disable-next-line no-underscore-dangle
@@ -124,10 +123,17 @@ const evt = new Evt();
 
         return xhr;
     };
-}());
 
-// eslint-disable-next-line func-names
-(function () {
+    const recover = () => {
+        // @ts-ignore
+        // eslint-disable-next-line no-underscore-dangle
+        window.XMLHttpRequest = window.__XMLHttpRequest;
+    };
+
+    return recover;
+}
+
+function overwriteFetch() {
     const ofetch = window.fetch;
     // @ts-ignore
     // eslint-disable-next-line no-underscore-dangle
@@ -209,7 +215,15 @@ const evt = new Evt();
             });
         });
     };
-}());
+
+    const recover = () => {
+        // @ts-ignore
+        // eslint-disable-next-line func-names
+        window.fetch = window.__fetch;
+    };
+
+    return recover;
+}
 
 export class AnysMonitorAjaxPlugin extends AnysPlugin {
     options() {
@@ -222,6 +236,7 @@ export class AnysMonitorAjaxPlugin extends AnysPlugin {
     }
 
     registerXhr() {
+        const recover = overwriteXHR();
         const listener = (log) => {
             if (!this.anys.options.ajaxResponse && log.type === 'xhr.ok') {
                 delete log.detail.response;
@@ -229,10 +244,14 @@ export class AnysMonitorAjaxPlugin extends AnysPlugin {
             this.anys.write(log);
         };
         evt.on('xhr', listener);
-        return () => evt.off('xhr', listener);
+        return () => {
+            evt.off('xhr', listener);
+            recover();
+        };
     }
 
     registerFetch() {
+        const recover = overwriteFetch();
         const listener = (log) => {
             if (!this.anys.options.ajaxResponse && log.type === 'fetch.ok') {
                 delete log.detail.data;
@@ -240,7 +259,10 @@ export class AnysMonitorAjaxPlugin extends AnysPlugin {
             this.anys.write(log);
         };
         evt.on('fetch', listener);
-        return () => evt.off('fetch', listener);
+        return () => {
+            evt.off('fetch', listener);
+            recover();
+        };
     }
 
     registerPatchRequestId() {

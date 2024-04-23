@@ -1,14 +1,16 @@
 {
   "name": "anys",
-  "version": "6.0.0",
+  "version": "7.0.0",
   "description": "The most agile javascript monitor project.",
   "main": "src/index.js",
   "type": "module",
-  "scripts": {
-    "build": "rimraf dist && webpack --config ../../webpack.config.js"
-  },
   "author": "tangshuang",
   "license": "Apache-2.0",
+  "homepage": "https://github.com/tangshuang/anys",
+  "scripts": {
+    "build": "rimraf dist && webpack --config ../../webpack.config.js",
+    "republish": "(can-npm-publish && npm publish) || exit 0"
+  },
   "dependencies": {
     "ts-fns": "^11.1.1"
   },

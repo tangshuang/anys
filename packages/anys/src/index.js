@@ -200,6 +200,7 @@ export class Anys {
     }
 
     invoke(type, ...args) {
+        const defers = [];
         for (let i = 0, len = this._pluginList.length; i < len; i += 1) {
             const plugin = this._pluginList[i];
             if (!plugin[type]) {
@@ -208,12 +209,17 @@ export class Anys {
             if (!isFunction(plugin[type])) {
                 continue;
             }
-            plugin[type](...args);
+            const res = plugin[type](...args);
+            if (res instanceof Promise) {
+                defers.push(res);
+            }
         }
+        return Promise.all(defers).then(() => {});
     }
 
     refreshTraceId() {
         const prevTraceId = this.traceId;
+        this.invoke('refreshTraceId');
         this.traceId = this.definitions.trace ? this.definitions.trace() : createRandomString(8);
         this.emit('refreshTraceId', { prev: prevTraceId, next: this.traceId });
     }
@@ -244,8 +250,6 @@ export class Anys {
             }
         }
 
-        this.emit('write', data);
-
         for (let i = 0, len = this._pluginList.length; i < len; i += 1) {
             const plugin = this._pluginList[i];
             if (isFunction(plugin.filter)) {
@@ -257,6 +261,8 @@ export class Anys {
                 plugin.write(data);
             }
         }
+
+        this.emit('write', data);
     }
 
     report(message) {
@@ -271,6 +277,147 @@ export class Anys {
         });
         const signal = { message, resolve, reject };
         this._queue.push(signal);
+
+        /**
+         * read logs
+         */
+        const read = (operators) => (next) => {
+            const logs = [];
+            const readDefers = [];
+            operators.forEach((operator) => {
+                if (!operator.read) {
+                    return;
+                }
+
+                const callback = (data) => {
+                    operator.data = data;
+                    if (data?.length) {
+                        logs.push(...data);
+                    }
+                };
+
+                const ret = operator.read(message);
+
+                if (ret instanceof Promise) {
+                    ret.then(callback);
+                    readDefers.push(ret);
+                }
+                else {
+                    callback(ret);
+                }
+            });
+            if (readDefers.length) {
+                return Promise.all(readDefers).then(() => {
+                    this.emit('read', message, logs);
+                    next(logs);
+                });
+            }
+            else {
+                this.emit('read', message, logs);
+                next(logs);
+            }
+        };
+
+        /**
+         * arrange logs
+         */
+        const arrange = (operators) => (next, logs) => {
+            const arrageDefers = [];
+            operators.forEach((operator) => {
+                if (!operator.arrange) {
+                    return;
+                }
+
+                const callback = (chunks) => {
+                    operator.chunks = chunks;
+                };
+
+                const ret = operator.arrange(operator.data, logs);
+
+                if (ret instanceof Promise) {
+                    ret.then(callback);
+                    arrageDefers.push(ret);
+                }
+                else {
+                    callback(ret);
+                }
+            });
+            if (arrageDefers.length) {
+                return Promise.all(arrageDefers).then(() => {
+                    this.emit('arrage', message, operators.map((item) => item.chunks));
+                    next(logs);
+                });
+            }
+            else {
+                this.emit('arrage', message, operators.map((item) => item.chunks));
+                next(logs);
+            }
+        };
+
+        /**
+         * send logs
+         */
+        const send = (operators) => (next, logs) => {
+            const sendDefers = [];
+            operators.forEach((operator) => {
+                if (!operator.send) {
+                    return;
+                }
+
+                const chunks = operator.chunks || [logs];
+
+                chunks.forEach((chunk) => {
+                    if (!chunk?.length) {
+                        return;
+                    }
+                    const ret = operator.send(chunk);
+                    if (ret instanceof Promise) {
+                        sendDefers.push(ret);
+                    }
+                });
+            });
+            if (sendDefers.length) {
+                return Promise.all(sendDefers).then(() => {
+                    this.emit('send', message, operators.map((item) => item.chunks));
+                    next(logs);
+                });
+            }
+            else {
+                this.emit('send', message, operators.map((item) => item.chunks));
+                next(logs);
+            }
+        };
+
+        /**
+         * clear logs
+         */
+        const clear = (operators) => (next, logs) => {
+            const clearDefers = [];
+            operators.forEach((operator) => {
+                if (!operator.clear) {
+                    return;
+                }
+
+                const chunks = operator.chunks || [logs];
+
+                chunks.forEach((chunk) => {
+                    const ret = operator.clear(chunk);
+                    if (ret && ret instanceof Promise) {
+                        clearDefers.push(ret);
+                    }
+                });
+            });
+            if (clearDefers.length) {
+                return Promise.all(clearDefers).then(() => {
+                    this.emit('clear', message, operators.map((item) => item.chunks));
+                    next();
+                });
+            }
+            else {
+                this.emit('clear', message, operators.map((item) => item.chunks));
+                next();
+            }
+        };
 
         this._reporting = false;
         const run = () => {
@@ -288,7 +435,8 @@ export class Anys {
             const { message, resolve, reject } = signal;
             this.emit('report', message);
 
-            const operators = [];
+            const discreteOperators = [];
+            const intensiveOperators = [];
 
             for (let i = 0, len = this._pluginList.length; i < len; i += 1) {
                 const plugin = this._pluginList[i];
@@ -296,72 +444,57 @@ export class Anys {
                 let flag = 0;
                 if (isFunction(plugin.read)) {
                     operator.read = plugin.read.bind(plugin);
-                    flag = 1;
+                    flag ++;
                 }
                 if (isFunction(plugin.arrange)) {
                     operator.arrange = plugin.arrange.bind(plugin);
-                    flag = 1;
+                    flag ++;
                 }
                 if (isFunction(plugin.send)) {
                     operator.send = plugin.send.bind(plugin);
-                    flag = 1;
+                    flag ++;
                 }
                 if (isFunction(plugin.clear)) {
                     operator.clear = plugin.clear.bind(plugin);
-                    flag = 1;
+                    flag ++;
                 }
-                if (flag) {
-                    operators.push(operator);
+
+                // if a plugin has all report hooks, it means this plugin will report by itself without any other plugin's effects
+                if (flag === 4) {
+                    intensiveOperators.push(operator);
+                }
+                // depend on other plugins' hook result
+                else if (flag) {
+                    discreteOperators.push(operator);
                 }
             }
 
-            const runAsync = (fn, ...args) => Promise.resolve().then(() => isFunction(fn) ? fn(...args) : null);
-            const runAsyncPipe = (...fns) => fns.reduce((deferer, fn) => isFunction(fn) ? deferer.then(fn) : deferer, Promise.resolve());
-
-            runAsyncPipe(
-                () => Promise.all(operators.map((operator) => {
-                    return runAsync(operator.read, message).then((data) => {
-                        operator.data = data;
-                        return data;
-                    });
-                })),
-                (groups) => {
-                    const data = [];
-                    groups.forEach((logs) => {
-                        if (isArray(logs) && logs.length) {
-                            data.push(...logs);
-                        }
-                    });
-                    this.emit('read', data);
-                    return data;
+            pipe([
+                read(intensiveOperators),
+                read(discreteOperators),
+                arrange([...intensiveOperators, ...discreteOperators]),
+                send([...intensiveOperators, ...discreteOperators]),
+                clear([...intensiveOperators, ...discreteOperators]),
+            ], {
+                onError: reject,
+                onSuccess: resolve,
+                onComplete: () => {
+                    this._reporting = false;
+                    run();
                 },
-                (data) => {
-                    if (!data.length) {
-                        return;
-                    }
-                    return Promise.all(operators.map((operator) => {
-                        const defer = operator.arrange ? runAsync(operator.arrange, operator.data, data) : Promise.resolve([data]);
-                        return defer.then((chunks) => {
-                            this.emit('arrange', chunks);
-                            return Promise.all(chunks.map((chunk) => {
-                                this.emit('send', chunk);
-                                return runAsync(operator.send, chunk).then(() => {
-                                    this.emit('clear', chunk);
-                                    return runAsync(operator.clear, chunk);
-                                });
-                            }));
-                        });
-                    })).then(() => {});
-                },
-            ).then(resolve, reject).finally(() => {
-                this._reporting = false;
-                run();
             });
         };
 
         run();
 
         return defer;
+    }
+
+    send(logs) {
+        logs = isArray(logs) ? logs : [logs];
+        const res = this.invoke('send', logs);
+        this.emit('send', logs);
+        return res;
     }
 
     stop() {
@@ -390,4 +523,45 @@ function objectAssign(obj1, obj2) {
         obj1[key] = value;
     });
     return obj1;
+}
+
+function pipe(fns, { onError, onSuccess, onComplete }) {
+    let data, err;
+
+    function next(arg) {
+        data = arg;
+        run();
+    }
+
+    function run() {
+        if (err) {
+            return;
+        }
+
+        const fn = fns.shift();
+
+        // end
+        if (!fn) {
+            onSuccess();
+            onComplete();
+            return;
+        }
+
+        try {
+            const ret = fn(next, data);
+            if (ret instanceof Promise) {
+                ret.catch((e) => {
+                    err = e;
+                    onError(e);
+                    onComplete();
+                });
+            }
+        } catch (e) {
+            err = e;
+            onError(e);
+            onComplete();
+        }
+    }
+
+    run();
 }
