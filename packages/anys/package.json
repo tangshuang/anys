@@ -1,6 +1,6 @@
 {
   "name": "anys",
-  "version": "7.0.0",
+  "version": "8.0.0",
   "description": "The most agile javascript monitor project.",
   "main": "src/index.js",
   "type": "module",
