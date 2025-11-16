@@ -1,4 +1,4 @@
-import { AnysPlugin, camelCase, Evt } from 'anys-shared';
+import { AnysPlugin, camelCase, Evt } from 'anys-utils';
 import { createRandomString } from 'ts-fns';
 
 function getInitNavigationPerformanceData() {

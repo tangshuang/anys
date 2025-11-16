@@ -1,4 +1,4 @@
-import { AnysPlugin, getPath } from 'anys-shared';
+import { AnysPlugin, getPath } from 'anys-utils';
 import { createRandomString } from 'ts-fns';
 
 export class AnysMonitorDOMMutationPlugin extends AnysPlugin {

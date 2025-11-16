@@ -1,4 +1,4 @@
-import { AnysPlugin, ajaxPost, replaceUrlSearch } from 'anys-shared';
+import { AnysPlugin, ajaxPost, replaceUrlSearch } from 'anys-utils';
 import { AnysIdentifyPlugin } from 'anys-web-plugin-identify';
 import { AnysMonitorInputEventPlugin } from 'anys-web-plugin-monitor-input-event';
 import { AnysMonitorMouseEventPlugin } from 'anys-web-plugin-monitor-mouse-event';

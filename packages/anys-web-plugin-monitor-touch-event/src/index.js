@@ -1,4 +1,4 @@
-import { AnysPlugin, getPath } from 'anys-shared';
+import { AnysPlugin, getPath } from 'anys-utils';
 
 export class AnysMonitorTouchEventPlugin extends AnysPlugin {
     options() {

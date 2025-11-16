@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 
-import { AnysPlugin, getPath } from 'anys-shared';
+import { AnysPlugin, getPath } from 'anys-utils';
 
 let customElementRegistered = false;
 let browCallback = null;

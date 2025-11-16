@@ -1,4 +1,4 @@
-import { Evt, AnysPlugin, replaceUrlSearch } from 'anys-shared';
+import { Evt, AnysPlugin, replaceUrlSearch } from 'anys-utils';
 import { createRandomString } from 'ts-fns';
 
 const evt = new Evt();

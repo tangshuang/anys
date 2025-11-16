@@ -13,7 +13,7 @@
     "republish": "(can-npm-publish && npm publish) || exit 0"
   },
   "dependencies": {
-    "anys-shared": "^8.0.0",
+    "anys-utils": "^8.0.0",
     "indb": "^4.0.1"
   },
   "publishConfig": {

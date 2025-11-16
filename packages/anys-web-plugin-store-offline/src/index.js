@@ -1,4 +1,4 @@
-import { AsyncQueue } from 'anys-shared';
+import { AsyncQueue } from 'anys-utils';
 import { InDB } from 'indb/es/index.js';
 
 export class AnysStoreOfflinePlugin {

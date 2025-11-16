@@ -1,4 +1,4 @@
-import { AnysPlugin } from 'anys-shared';
+import { AnysPlugin } from 'anys-utils';
 
 export class AnysMonitorWindowSizePlugin extends AnysPlugin {
     options() {

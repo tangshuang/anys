@@ -1,4 +1,4 @@
-import { ajaxPost, replaceUrlSearch, AnysPlugin } from 'anys-shared';
+import { ajaxPost, replaceUrlSearch, AnysPlugin } from 'anys-utils';
 
 export class AnysSendByAjaxPlugin extends AnysPlugin {
     options() {

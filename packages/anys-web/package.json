@@ -15,7 +15,7 @@
   "dependencies": {
     "anys": "^8.0.0",
     "anys-plugin-store-memory": "^8.0.0",
-    "anys-shared": "^8.0.0",
+    "anys-utils": "^8.0.0",
     "anys-web-plugin-identify": "^8.0.0",
     "anys-web-plugin-monitor-ajax": "^8.0.0",
     "anys-web-plugin-monitor-dom-mutation": "^8.0.0",

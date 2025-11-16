@@ -1,4 +1,4 @@
-import { AnysPlugin } from 'anys-shared';
+import { AnysPlugin } from 'anys-utils';
 import { createRandomString } from 'ts-fns';
 
 const key = 'anys_client_id_for_crash_monitor';
