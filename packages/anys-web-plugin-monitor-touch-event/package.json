@@ -1,6 +1,6 @@
 {
   "name": "anys-web-plugin-monitor-touch-event",
-  "version": "8.0.0",
+  "version": "9.0.0",
   "description": "",
   "main": "src/index.js",
   "type": "module",
@@ -13,7 +13,7 @@
     "republish": "(can-npm-publish && npm publish) || exit 0"
   },
   "dependencies": {
-    "anys-utils": "^8.0.0"
+    "anys-utils": "^9.0.0"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
